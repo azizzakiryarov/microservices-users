@@ -1,12 +1,31 @@
 package se.azza.userservice.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+
+@Entity
+@Table(name = "users")
 public class User {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
+	@Column(name = "firstName", nullable = false)
 	private String firstName;
+	@Column(name = "lastName", nullable = false)
 	private String lastName;
+	@Column(name = "userName", nullable = false, unique = true)
 	private String userName;
+	@Column(name = "password", nullable = false, unique = true)
 	private String password;
+
+	public User() {
+	}
 
 	public User(long id, String firstName, String lastName, String userName, String password) {
 		super();
@@ -16,6 +35,7 @@ public class User {
 		this.userName = userName;
 		this.password = password;
 	}
+
 	public User(String firstName, String lastName, String userName, String password) {
 		super();
 		this.firstName = firstName;
