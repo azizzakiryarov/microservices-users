@@ -1,14 +1,9 @@
 package se.azza.userservice.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+
 import se.azza.userservice.model.User;
 
-public interface UserRepository {
+public interface UserRepository extends JpaRepository<User, Long> {
 	
-	User addUser(User user);
-	
-	User getUserById(long id);
-	
-	void deleteUserById(long id);
-	
-	void updateUserById(long id, User user);
 }
