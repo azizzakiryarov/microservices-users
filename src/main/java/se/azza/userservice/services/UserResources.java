@@ -1,5 +1,6 @@
 package se.azza.userservice.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,5 +55,11 @@ public class UserResources {
 	public ResponseEntity<User> deleteUserById(@PathVariable(value = "id") Long id) {
 		userRepository.deleteById(id);
 		return new ResponseEntity<User>(HttpStatus.OK);
+	}
+
+	@GetMapping(path = "/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<User>> getAllUsers() {
+		List<User> users = userRepository.findAll();
+		return new ResponseEntity<List<User>>(users, HttpStatus.OK);
 	}
 }
