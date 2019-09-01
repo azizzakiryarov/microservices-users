@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import se.azza.userservice.constants.States.userState;
 import se.azza.userservice.model.User;
 import se.azza.userservice.repository.UserRepository;
 
@@ -44,11 +45,18 @@ public class UserResources {
 	@PutMapping(value = "/update/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<User> updateUserById(@PathVariable(value = "id") Long id,
 			@RequestParam(value = "firstName") String firstName, @RequestParam(value = "lastName") String lastName,
-			@RequestParam(value = "userName") String userName, @RequestParam(value = "password") String password) {
+			@RequestParam(value = "userName") String userName, @RequestParam(value = "password") String password,
+			@RequestParam(value = "userState") userState userState) {
 		Optional<User> currentUser = userRepository.findById(id);
-		User newUser = new User(currentUser.get().getId(), firstName, lastName, userName, password);
-		userRepository.save(newUser);
-		return new ResponseEntity<User>(newUser, HttpStatus.OK);
+		String INACTIVE = se.azza.userservice.constants.States.userState.INACTIVE.toString();
+		String ACTIVE = se.azza.userservice.constants.States.userState.ACTIVE.toString();
+		if (userState.equals(INACTIVE) || userState.equals(ACTIVE)) {
+			User newUser = new User(currentUser.get().getId(), firstName, lastName, userName, password, userState);
+			userRepository.save(newUser);
+			return new ResponseEntity<User>(newUser, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<User>(HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	@DeleteMapping(path = "/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
