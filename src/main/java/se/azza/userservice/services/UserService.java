@@ -34,4 +34,10 @@ public class UserService {
 	public List<User> getAllUsers() {
 		return userRepository.findAll();
 	}
+
+	public User inLoggning(String userName, String password) {
+		return userRepository.findAll().stream()
+				.filter(user -> user.getUserName().equals(userName) && user.getPassword().equals(password)).findAny()
+				.orElse(null);
+	}
 }

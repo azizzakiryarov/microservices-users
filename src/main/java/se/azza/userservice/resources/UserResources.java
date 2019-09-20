@@ -55,7 +55,6 @@ public class UserResources {
 			@RequestParam(value = "firstName") String firstName, @RequestParam(value = "lastName") String lastName,
 			@RequestParam(value = "userName") String userName, @RequestParam(value = "password") String password,
 			@RequestParam(value = "userState") userState userState) {
-		System.out.println(firstName + ' ' + lastName + ' ' + userName + ' ' + password + ' ' + userState);
 		Optional<User> currentUser = userRepository.findById(id);
 		User newUser = new User(currentUser.get().getId(), firstName, lastName, userName, password, userState);
 		userService.updateUser(newUser);
@@ -74,5 +73,13 @@ public class UserResources {
 	public ResponseEntity<List<User>> getAllUsers() {
 		List<User> users = userService.getAllUsers();
 		return new ResponseEntity<List<User>>(users, HttpStatus.OK);
+	}
+	
+	@CrossOrigin(origins = "*", allowedHeaders = "*")
+	@GetMapping(path = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<User> inLoggning(@RequestParam(value = "userName") String userName, 
+			@RequestParam(value = "password") String password) {
+		User user = userService.inLoggning(userName, password);
+		return new ResponseEntity<User>(user, HttpStatus.OK);
 	}
 }
