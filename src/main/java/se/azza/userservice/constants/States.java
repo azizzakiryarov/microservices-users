@@ -6,4 +6,9 @@ public class States {
 		ACTIVE,
 		INACTIVE
 	}
+
+	public enum userRole {
+		ADMIN,
+		USER
+	}
 }

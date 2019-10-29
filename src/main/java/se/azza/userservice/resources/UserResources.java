@@ -2,7 +2,6 @@ package se.azza.userservice.resources;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,8 +14,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import se.azza.userservice.constants.States.userState;
+import se.azza.userservice.constants.States.userRole;
 import se.azza.userservice.model.User;
 import se.azza.userservice.repository.UserRepository;
 import se.azza.userservice.services.UserService;
@@ -24,7 +23,7 @@ import se.azza.userservice.services.UserService;
 @RestController
 @RequestMapping("/users")
 public class UserResources {
-	
+
 	@Autowired
 	UserRepository userRepository;
 
@@ -35,9 +34,8 @@ public class UserResources {
 	@RequestMapping("/add")
 	public ResponseEntity<User> addUser(@RequestParam(value = "firstName") String firstName,
 			@RequestParam(value = "lastName") String lastName, @RequestParam(value = "userName") String userName,
-			@RequestParam(value = "password") String password) {
-
-		User newUser = new User(firstName, lastName, userName, password);
+			@RequestParam(value = "password") String password, @RequestParam(value = "userRole") userRole userRole) {
+		User newUser = new User(firstName, lastName, userName, password, userRole);
 		userService.createUser(newUser);
 		return new ResponseEntity<User>(newUser, HttpStatus.CREATED);
 	}
@@ -56,7 +54,7 @@ public class UserResources {
 			@RequestParam(value = "userName") String userName, @RequestParam(value = "password") String password,
 			@RequestParam(value = "userState") userState userState) {
 		Optional<User> currentUser = userRepository.findById(id);
-		User newUser = new User(currentUser.get().getId(), firstName, lastName, userName, password, userState);
+		User newUser = new User(currentUser.get().getId(), firstName, lastName, userName, password, userState, currentUser.get().getUserRole());
 		userService.updateUser(newUser);
 		return new ResponseEntity<User>(newUser, HttpStatus.OK);
 	}
@@ -74,10 +72,10 @@ public class UserResources {
 		List<User> users = userService.getAllUsers();
 		return new ResponseEntity<List<User>>(users, HttpStatus.OK);
 	}
-	
+
 	@CrossOrigin(origins = "*", allowedHeaders = "*")
 	@GetMapping(path = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<User> inLoggning(@RequestParam(value = "userName") String userName, 
+	public ResponseEntity<User> inLoggning(@RequestParam(value = "userName") String userName,
 			@RequestParam(value = "password") String password) {
 		User user = userService.inLoggning(userName, password);
 		return new ResponseEntity<User>(user, HttpStatus.OK);
