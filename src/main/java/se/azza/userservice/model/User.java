@@ -1,5 +1,6 @@
 package se.azza.userservice.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -7,6 +8,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import se.azza.userservice.constants.States.userState;
 import se.azza.userservice.constants.States.userRole;
@@ -28,13 +31,18 @@ public final class User {
 	private String password;
 	@Enumerated(EnumType.STRING)
 	private userState userState;
-	@Enumerated(EnumType.STRING)
-	private userRole userRole;
 
 	public User() {
 	}
-	
-	public User(long id, String firstName, String lastName, String userName, String password, userState userState, userRole userRole) {
+
+	@ManyToOne
+	private Team team;
+
+	@OneToOne(cascade = CascadeType.ALL) 
+	private Role role;
+
+	public User(long id, String firstName, String lastName, String userName, String password, userState userState,
+			Team team, Role role) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
@@ -42,7 +50,30 @@ public final class User {
 		this.userName = userName;
 		this.password = password;
 		this.userState = userState;
-		this.userRole = userRole;
+		this.team = team;
+		this.role = role;
+	}
+
+	public User(String firstName, String lastName, String userName, String password, Role role,
+			Team team) {
+		super();
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.userName = userName;
+		this.password = password;
+		this.userState = se.azza.userservice.constants.States.userState.ACTIVE;
+		this.role = role;
+		this.team = team;
+	}
+
+	public User(long id, String firstName, String lastName, String userName, String password, userState userState) {
+		super();
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.userName = userName;
+		this.password = password;
+		this.userState = userState;
 	}
 
 	public User(String firstName, String lastName, String userName, String password, userRole userRole) {
@@ -52,7 +83,16 @@ public final class User {
 		this.userName = userName;
 		this.password = password;
 		this.userState = se.azza.userservice.constants.States.userState.ACTIVE;
-		this.userRole = userRole;
+	}
+
+	public User(long id, String firstName, String lastName, String userName, String password, userState userState,
+			userRole userRole) {
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.userName = userName;
+		this.password = password;
+		this.userState = userState;
+		this.role.setUserRole(userRole);
 	}
 
 	public long getId() {
@@ -103,12 +143,20 @@ public final class User {
 		this.userState = userState;
 	}
 
-	public userRole getUserRole() {
-		return userRole;
+	public Team getTeam() {
+		return team;
 	}
 
-	public void setUserRole(userRole userRole) {
-		this.userRole = userRole;
+	public void setTeam(Team team) {
+		this.team = team;
+	}
+
+	public Role getRole() {
+		return role;
+	}
+
+	public void setRole(Role role) {
+		this.role = role;
 	}
 
 	@Override
@@ -119,8 +167,9 @@ public final class User {
 		result = prime * result + (int) (id ^ (id >>> 32));
 		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
 		result = prime * result + ((password == null) ? 0 : password.hashCode());
+		result = prime * result + ((role == null) ? 0 : role.hashCode());
+		result = prime * result + ((team == null) ? 0 : team.hashCode());
 		result = prime * result + ((userName == null) ? 0 : userName.hashCode());
-		result = prime * result + ((userRole == null) ? 0 : userRole.hashCode());
 		result = prime * result + ((userState == null) ? 0 : userState.hashCode());
 		return result;
 	}
@@ -151,12 +200,20 @@ public final class User {
 				return false;
 		} else if (!password.equals(other.password))
 			return false;
+		if (role == null) {
+			if (other.role != null)
+				return false;
+		} else if (!role.equals(other.role))
+			return false;
+		if (team == null) {
+			if (other.team != null)
+				return false;
+		} else if (!team.equals(other.team))
+			return false;
 		if (userName == null) {
 			if (other.userName != null)
 				return false;
 		} else if (!userName.equals(other.userName))
-			return false;
-		if (userRole != other.userRole)
 			return false;
 		if (userState != other.userState)
 			return false;

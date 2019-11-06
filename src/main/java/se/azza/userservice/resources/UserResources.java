@@ -14,8 +14,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
 import se.azza.userservice.constants.States.userState;
 import se.azza.userservice.constants.States.userRole;
+import se.azza.userservice.model.Role;
+import se.azza.userservice.model.Team;
 import se.azza.userservice.model.User;
 import se.azza.userservice.repository.UserRepository;
 import se.azza.userservice.services.UserService;
@@ -25,26 +29,32 @@ import se.azza.userservice.services.UserService;
 public class UserResources {
 
 	@Autowired
+	RestTemplate restTemplate;
+
+	@Autowired
 	UserRepository userRepository;
 
 	@Autowired
 	UserService userService;
-
+	
 	@CrossOrigin(origins = "*", allowedHeaders = "*")
 	@RequestMapping("/add")
 	public ResponseEntity<User> addUser(@RequestParam(value = "firstName") String firstName,
 			@RequestParam(value = "lastName") String lastName, @RequestParam(value = "userName") String userName,
-			@RequestParam(value = "password") String password, @RequestParam(value = "userRole") userRole userRole) {
-		User newUser = new User(firstName, lastName, userName, password, userRole);
+			@RequestParam(value = "password") String password, @RequestParam(value = "userRole") userRole userRole,
+			@RequestParam(value = "roleDescription") String roleDescription,  @RequestParam(value = "teamId") long teamId ) {
+		Role newRole = new Role(userRole, roleDescription);
+		Team currentTeam = new Team();
+		currentTeam.setId(teamId);
+		User newUser = new User(firstName, lastName, userName, password, newRole, currentTeam);
 		userService.createUser(newUser);
 		return new ResponseEntity<User>(newUser, HttpStatus.CREATED);
 	}
-
+	
 	@CrossOrigin(origins = "*", allowedHeaders = "*")
 	@GetMapping(path = "/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<User> getUserById(@PathVariable(value = "id") Long id) {
-		Optional<User> userId = userService.getUserById(id);
-		return new ResponseEntity<User>(userId.get(), HttpStatus.OK);
+		return userService.getUserById(id);
 	}
 
 	@CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -54,16 +64,16 @@ public class UserResources {
 			@RequestParam(value = "userName") String userName, @RequestParam(value = "password") String password,
 			@RequestParam(value = "userState") userState userState) {
 		Optional<User> currentUser = userRepository.findById(id);
-		User newUser = new User(currentUser.get().getId(), firstName, lastName, userName, password, userState, currentUser.get().getUserRole());
+		User newUser = new User(currentUser.get().getId(), firstName, lastName, userName, password, userState,
+				currentUser.get().getRole().getUserRole());
 		userService.updateUser(newUser);
 		return new ResponseEntity<User>(newUser, HttpStatus.OK);
 	}
 
 	@CrossOrigin(origins = "*", allowedHeaders = "*")
 	@DeleteMapping(path = "/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<User> deleteUserById(@PathVariable(value = "id") Long id) {
-		userService.deleteById(id);
-		return new ResponseEntity<User>(HttpStatus.OK);
+	public ResponseEntity<String> deleteUserById(@PathVariable(value = "id") Long id) {
+		return userService.deleteById(id, restTemplate);
 	}
 
 	@CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -79,5 +89,19 @@ public class UserResources {
 			@RequestParam(value = "password") String password) {
 		User user = userService.inLoggning(userName, password);
 		return new ResponseEntity<User>(user, HttpStatus.OK);
+	}
+	
+	@CrossOrigin(origins = "*", allowedHeaders = "*")
+	@GetMapping(path = "/getAllUsersFor/{teamId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<User>> getTeamsUsers(@PathVariable(value = "teamId") long teamId) {
+		List<User> users = userRepository.findByTeamId(teamId);
+		return new ResponseEntity<List<User>>(users, HttpStatus.OK);
+	}
+	
+	@CrossOrigin(origins = "*", allowedHeaders = "*")
+	@GetMapping(path = "/getTeamId/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Long> getTeamId(@PathVariable(value = "userId") long userId) {
+		Optional<User> user = userRepository.findById(userId);
+		return new ResponseEntity<Long>(user.get().getTeam().getId(), HttpStatus.OK);
 	}
 }
