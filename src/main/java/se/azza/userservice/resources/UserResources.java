@@ -18,8 +18,6 @@ import org.springframework.web.client.RestTemplate;
 
 import se.azza.userservice.constants.States.userState;
 import se.azza.userservice.constants.States.userRole;
-import se.azza.userservice.model.Role;
-import se.azza.userservice.model.Team;
 import se.azza.userservice.model.User;
 import se.azza.userservice.repository.UserRepository;
 import se.azza.userservice.services.UserService;
@@ -36,21 +34,17 @@ public class UserResources {
 
 	@Autowired
 	UserService userService;
-	
+
 	@CrossOrigin(origins = "*", allowedHeaders = "*")
 	@RequestMapping("/add")
-	public ResponseEntity<User> addUser(@RequestParam(value = "firstName") String firstName,
+	public ResponseEntity<String> addUser(@RequestParam(value = "firstName") String firstName,
 			@RequestParam(value = "lastName") String lastName, @RequestParam(value = "userName") String userName,
 			@RequestParam(value = "password") String password, @RequestParam(value = "userRole") userRole userRole,
-			@RequestParam(value = "roleDescription") String roleDescription,  @RequestParam(value = "teamId") long teamId ) {
-		Role newRole = new Role(userRole, roleDescription);
-		Team currentTeam = new Team();
-		currentTeam.setId(teamId);
-		User newUser = new User(firstName, lastName, userName, password, newRole, currentTeam);
-		userService.createUser(newUser);
-		return new ResponseEntity<User>(newUser, HttpStatus.CREATED);
+			@RequestParam(value = "roleDescription") String roleDescription,
+			@RequestParam(value = "teamId") long teamId) {
+		return userService.createUser(firstName, lastName, userName, password, userRole, roleDescription, teamId);
 	}
-	
+
 	@CrossOrigin(origins = "*", allowedHeaders = "*")
 	@GetMapping(path = "/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<User> getUserById(@PathVariable(value = "id") Long id) {
@@ -90,14 +84,14 @@ public class UserResources {
 		User user = userService.inLoggning(userName, password);
 		return new ResponseEntity<User>(user, HttpStatus.OK);
 	}
-	
+
 	@CrossOrigin(origins = "*", allowedHeaders = "*")
 	@GetMapping(path = "/getAllUsersFor/{teamId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<User>> getTeamsUsers(@PathVariable(value = "teamId") long teamId) {
 		List<User> users = userRepository.findByTeamId(teamId);
 		return new ResponseEntity<List<User>>(users, HttpStatus.OK);
 	}
-	
+
 	@CrossOrigin(origins = "*", allowedHeaders = "*")
 	@GetMapping(path = "/getTeamId/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Long> getTeamId(@PathVariable(value = "userId") long userId) {
