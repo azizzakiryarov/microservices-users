@@ -27,6 +27,7 @@ public class UserService {
 
 	public ResponseEntity<String> createUser(String firstName, String lastName, String userName, String password,
 			userRole userRole, String roleDescription, long teamId) {
+		User newUser = null;
 		Role newRole = new Role();
 		if (States.userRole.ADMIN.equals(userRole) || States.userRole.DEVELOPER.equals(userRole)
 				|| States.userRole.SCRUMMASTER.equals(userRole) || States.userRole.TEAMMANAGER.equals(userRole)
@@ -43,14 +44,14 @@ public class UserService {
 		} else {
 			return ResponseEntity.badRequest().body("Something is wrong with teamId: " + teamId);
 		}
-		if (!userRepository.findByUserName(userName).getUserName().equals(userName)) {
-			User newUser = new User(firstName, lastName, userName, password, newRole, currentTeam);
+		if (!isAlreadyExistUserName(userName)) {
+			newUser = new User(firstName, lastName, userName, password, newRole, currentTeam);
 			userRepository.save(newUser);
 		} else {
 			return ResponseEntity.badRequest()
 					.body("This username: " + userName + " is already in used :( try again...");
 		}
-		return new ResponseEntity<String>(HttpStatus.CREATED);
+		return new ResponseEntity<String>(Long.toString(newUser.getId()), HttpStatus.CREATED);
 	}
 
 	public ResponseEntity<User> getUserById(long userId) {
@@ -83,6 +84,10 @@ public class UserService {
 		return userRepository.findAll().stream()
 				.filter(user -> user.getUserName().equals(userName) && user.getPassword().equals(password)).findAny()
 				.orElse(null);
+	}
+	
+	public boolean isAlreadyExistUserName(String userName) {
+		return userRepository.findAll().stream().filter(user -> user.getUserName().equals(userName)).findAny().orElse(null) != null;
 	}
 
 }

@@ -11,7 +11,7 @@ import se.azza.userservice.model.User;
 public interface UserRepository extends JpaRepository<User, Long> {
 	
 	List<User> findByTeamId(Long id);
-
+	
 	@Query("select u from User u where u.userName = :userName")
 	User findByUserName(@Param("userName") String userName);
 }
