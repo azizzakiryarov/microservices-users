@@ -20,7 +20,7 @@ import se.azza.userservice.services.UserService;
 @SpringBootTest
 @AutoConfigureMockMvc
 public class UserServiceApplicationTests {
-	
+
 	static String LOCALHOST = "http://localhost:8081";
 
 	@Autowired
@@ -41,11 +41,9 @@ public class UserServiceApplicationTests {
 		UserService userServiceMock = org.mockito.Mockito.mock(UserService.class);
 		ResponseEntity<User> userMocked = userServiceMock.getUserById(86);
 		Mockito.when(userServiceMock.getUserById(86)).thenReturn(userMocked);
-		mockMvc.perform(MockMvcRequestBuilders.get(LOCALHOST + "/users/get/86")
-				.accept(MediaType.APPLICATION_JSON_VALUE))
-				.andDo(MockMvcResultHandlers.print())
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andReturn();
+		mockMvc.perform(
+				MockMvcRequestBuilders.get(LOCALHOST + "/users/get/86").accept(MediaType.APPLICATION_JSON_VALUE))
+				.andDo(MockMvcResultHandlers.print()).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
 		Mockito.verify(userServiceMock).getUserById(86);
 	}
 }
