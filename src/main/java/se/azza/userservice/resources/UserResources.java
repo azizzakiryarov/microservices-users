@@ -79,10 +79,20 @@ public class UserResources {
 
 	@CrossOrigin(origins = "*", allowedHeaders = "*")
 	@GetMapping(path = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<User> inLoggning(@RequestParam(value = "userName") String userName,
-			@RequestParam(value = "password") String password) {
+	public ResponseEntity<User> inLoggning(@RequestParam(value = "userName") String userName, @RequestParam(value = "password") String password) {
 		User user = userService.inLoggning(userName, password);
+		user.setLogged(true);
+		userRepository.save(user);
 		return new ResponseEntity<User>(user, HttpStatus.OK);
+	}
+
+	@CrossOrigin(origins = "*", allowedHeaders = "*")
+	@GetMapping(path = "/logout/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<User> Logout(@PathVariable(value = "id") Long id) {
+		Optional<User> user = userRepository.findById(id);
+		user.get().setLogged(false);
+		userRepository.save(user.get());
+		return new ResponseEntity<User>(user.get(), HttpStatus.OK);
 	}
 
 	@CrossOrigin(origins = "*", allowedHeaders = "*")

@@ -46,6 +46,7 @@ public class UserService {
 		}
 		if (!isAlreadyExistUserName(userName)) {
 			newUser = new User(firstName, lastName, userName, password, newRole, currentTeam);
+			newUser.setLogged(true);
 			userRepository.save(newUser);
 		} else {
 			return ResponseEntity.badRequest()

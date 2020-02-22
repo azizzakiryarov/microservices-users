@@ -31,6 +31,8 @@ public final class User {
 	private String password;
 	@Enumerated(EnumType.STRING)
 	private userState userState;
+	@Column(name = "isLogged", nullable = false)
+	private boolean isLogged;
 
 	public User() {
 	}
@@ -38,8 +40,22 @@ public final class User {
 	@ManyToOne
 	private Team team;
 
-	@OneToOne(cascade = CascadeType.ALL) 
+	@OneToOne(cascade = CascadeType.ALL)
 	private Role role;
+
+	public User(long id, String firstName, String lastName, String userName, String password, userState userState,
+			Team team, Role role, boolean isLogged) {
+		super();
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.userName = userName;
+		this.password = password;
+		this.userState = userState;
+		this.isLogged = isLogged;
+		this.team = team;
+		this.role = role;
+	}
 
 	public User(long id, String firstName, String lastName, String userName, String password, userState userState,
 			Team team, Role role) {
@@ -54,8 +70,7 @@ public final class User {
 		this.role = role;
 	}
 
-	public User(String firstName, String lastName, String userName, String password, Role role,
-			Team team) {
+	public User(String firstName, String lastName, String userName, String password, Role role, Team team) {
 		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -159,12 +174,21 @@ public final class User {
 		this.role = role;
 	}
 
+	public boolean isLogged() {
+		return isLogged;
+	}
+
+	public void setLogged(boolean isLogged) {
+		this.isLogged = isLogged;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
 		result = prime * result + (int) (id ^ (id >>> 32));
+		result = prime * result + (isLogged ? 1231 : 1237);
 		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
 		result = prime * result + ((password == null) ? 0 : password.hashCode());
 		result = prime * result + ((role == null) ? 0 : role.hashCode());
@@ -189,6 +213,8 @@ public final class User {
 		} else if (!firstName.equals(other.firstName))
 			return false;
 		if (id != other.id)
+			return false;
+		if (isLogged != other.isLogged)
 			return false;
 		if (lastName == null) {
 			if (other.lastName != null)
