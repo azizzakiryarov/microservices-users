@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: microservices
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: microservices-users-deployment
+  namespace: microservices
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: users
+        tier: backend
+    spec:
+      containers:
+        - name: microservices-users
+          image: azizzakiryarov/microservices-users:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8081
+              protocol: TCP
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: 6600Fold
