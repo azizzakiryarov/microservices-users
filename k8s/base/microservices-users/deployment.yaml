@@ -4,7 +4,7 @@ metadata:
   name: microservices
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: microservices-users-deployment
   namespace: microservices
@@ -14,6 +14,7 @@ spec:
     matchLabels:
       app: users
       tier: backend
+  serviceName: "microservices-users"
   template:
     metadata:
       labels:

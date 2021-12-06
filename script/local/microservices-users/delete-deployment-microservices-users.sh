@@ -1,1 +1,1 @@
-kubectl delete deployment.apps/microservices-users-deployment service/microservices-users
+kubectl delete statefulset.apps/microservices-users-deployment service/microservices-users
