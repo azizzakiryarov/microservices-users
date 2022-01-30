@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: microservices-users
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   selector:
     app: users
   ports:
