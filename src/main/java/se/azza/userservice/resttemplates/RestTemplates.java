@@ -14,7 +14,7 @@ public class RestTemplates {
 	}
 
 	public static List<Issue> getIssuesForUser(RestTemplate restTemplate, Long userId) {
-		return Arrays.asList(restTemplate.getForObject("http://microservices-issues/issues/getAllIssuesFor/" + userId,
+		return Arrays.asList(restTemplate.getForObject("http://MICROSERVICES-ISSUES/issues/getAllIssuesFor/" + userId,
 				Issue[].class));
 	}
 }
