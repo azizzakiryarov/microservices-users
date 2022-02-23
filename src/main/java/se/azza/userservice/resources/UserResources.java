@@ -61,7 +61,7 @@ public class UserResources {
 		User newUser = new User(currentUser.get().getId(), firstName, lastName, userName, password, userState,
 				currentUser.get().getRole().getUserRole());
 		userService.updateUser(newUser);
-		return new ResponseEntity<User>(newUser, HttpStatus.OK);
+		return new ResponseEntity<>(newUser, HttpStatus.OK);
 	}
 
 	@CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -74,7 +74,7 @@ public class UserResources {
 	@GetMapping(path = "/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<User>> getAllUsers() {
 		List<User> users = userService.getAllUsers();
-		return new ResponseEntity<List<User>>(users, HttpStatus.OK);
+		return new ResponseEntity<>(users, HttpStatus.OK);
 	}
 
 	@CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -83,7 +83,7 @@ public class UserResources {
 		User user = userService.inLoggning(userName, password);
 		user.setLogged(true);
 		userRepository.save(user);
-		return new ResponseEntity<User>(user, HttpStatus.OK);
+		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
 
 	@CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -92,20 +92,20 @@ public class UserResources {
 		Optional<User> user = userRepository.findById(id);
 		user.get().setLogged(false);
 		userRepository.save(user.get());
-		return new ResponseEntity<User>(user.get(), HttpStatus.OK);
+		return new ResponseEntity<>(user.get(), HttpStatus.OK);
 	}
 
 	@CrossOrigin(origins = "*", allowedHeaders = "*")
 	@GetMapping(path = "/getAllUsersFor/{teamId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<User>> getTeamsUsers(@PathVariable(value = "teamId") long teamId) {
 		List<User> users = userRepository.findByTeamId(teamId);
-		return new ResponseEntity<List<User>>(users, HttpStatus.OK);
+		return new ResponseEntity<>(users, HttpStatus.OK);
 	}
 
 	@CrossOrigin(origins = "*", allowedHeaders = "*")
 	@GetMapping(path = "/getTeamId/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Long> getTeamId(@PathVariable(value = "userId") long userId) {
 		Optional<User> user = userRepository.findById(userId);
-		return new ResponseEntity<Long>(user.get().getTeam().getId(), HttpStatus.OK);
+		return new ResponseEntity<>(user.get().getTeam().getId(), HttpStatus.OK);
 	}
 }

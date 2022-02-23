@@ -27,7 +27,7 @@ public class UserService {
 
 	public ResponseEntity<String> createUser(String firstName, String lastName, String userName, String password,
 			userRole userRole, String roleDescription, long teamId) {
-		User newUser = null;
+		User newUser;
 		Role newRole = new Role();
 		if (States.userRole.ADMIN.equals(userRole) || States.userRole.DEVELOPER.equals(userRole)
 				|| States.userRole.SCRUMMASTER.equals(userRole) || States.userRole.TEAMMANAGER.equals(userRole)
@@ -52,13 +52,13 @@ public class UserService {
 			return ResponseEntity.badRequest()
 					.body("This username: " + userName + " is already in used :( try again...");
 		}
-		return new ResponseEntity<String>(Long.toString(newUser.getId()), HttpStatus.CREATED);
+		return new ResponseEntity<>(Long.toString(newUser.getId()), HttpStatus.CREATED);
 	}
 
 	public ResponseEntity<User> getUserById(long userId) {
 		Optional<User> user = userRepository.findById(userId);
-		if (!user.isEmpty()) {
-			return new ResponseEntity<User>(user.get(), HttpStatus.OK);
+		if (user.isPresent()) {
+			return new ResponseEntity<>(user.get(), HttpStatus.OK);
 		}
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
