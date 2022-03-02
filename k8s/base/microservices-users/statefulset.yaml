@@ -6,7 +6,7 @@ metadata:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: microservices-users-deployment
+  name: microservices-users-statefulset
   namespace: microservices
 spec:
   replicas: 1
