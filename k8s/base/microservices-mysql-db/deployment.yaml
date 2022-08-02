@@ -17,9 +17,11 @@ spec:
         - image: mysql:latest
           name: mysql
           env:
-            # Use secret in real usage
             - name: MYSQL_ROOT_PASSWORD
-              value: 6600Fold
+              valueFrom:
+                secretKeyRef:
+                  name: mysqldb-secret
+                  key: mysql-root-password
             - name: MYSQL_DATABASE
               value: microservices
           ports:
