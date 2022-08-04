@@ -2,7 +2,7 @@ package se.azza.userservice.resources;
 
 import java.util.List;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,86 +26,88 @@ import se.azza.userservice.services.UserService;
 @RequestMapping("/users")
 public class UserResources {
 
-	@Autowired
-	RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
+    private final UserRepository userRepository;
+    private final UserService userService;
 
-	@Autowired
-	UserRepository userRepository;
+    public UserResources(RestTemplate restTemplate, UserRepository userRepository, UserService userService) {
+        this.restTemplate = restTemplate;
+        this.userRepository = userRepository;
+        this.userService = userService;
+    }
 
-	@Autowired
-	UserService userService;
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @RequestMapping("/add")
+    public ResponseEntity<String> addUser(@RequestParam(value = "firstName") String firstName,
+                                          @RequestParam(value = "lastName") String lastName,
+                                          @RequestParam(value = "userName") String userName,
+                                          @RequestParam(value = "password") String password,
+                                          @RequestParam(value = "userRole") userRole userRole,
+                                          @RequestParam(value = "roleDescription") String roleDescription,
+                                          @RequestParam(value = "teamId") long teamId) {
+        return userService.createUser(firstName, lastName, userName, password, userRole, roleDescription, teamId);
+    }
 
-	@CrossOrigin(origins = "*", allowedHeaders = "*")
-	@RequestMapping("/add")
-	public ResponseEntity<String> addUser(@RequestParam(value = "firstName") String firstName,
-			@RequestParam(value = "lastName") String lastName, @RequestParam(value = "userName") String userName,
-			@RequestParam(value = "password") String password, @RequestParam(value = "userRole") userRole userRole,
-			@RequestParam(value = "roleDescription") String roleDescription,
-			@RequestParam(value = "teamId") long teamId) {
-		return userService.createUser(firstName, lastName, userName, password, userRole, roleDescription, teamId);
-	}
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @GetMapping(path = "/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<User> getUserById(@PathVariable(value = "id") Long id) {
+        return userService.getUserById(id);
+    }
 
-	@CrossOrigin(origins = "*", allowedHeaders = "*")
-	@GetMapping(path = "/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<User> getUserById(@PathVariable(value = "id") Long id) {
-		return userService.getUserById(id);
-	}
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @PutMapping(value = "/update/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<User> updateUserById(@PathVariable(value = "id") Long id,
+                                               @RequestParam(value = "firstName") String firstName,
+                                               @RequestParam(value = "lastName") String lastName,
+                                               @RequestParam(value = "userName") String userName,
+                                               @RequestParam(value = "password") String password,
+                                               @RequestParam(value = "userState") userState userState) {
+        Optional<User> currentUser = userRepository.findById(id);
+        User newUser = new User(currentUser.get().getId(), firstName, lastName, userName, password, userState,
+                currentUser.get().getRole().getUserRole());
+        userService.updateUser(newUser);
+        return new ResponseEntity<>(newUser, HttpStatus.OK);
+    }
 
-	@CrossOrigin(origins = "*", allowedHeaders = "*")
-	@PutMapping(value = "/update/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<User> updateUserById(@PathVariable(value = "id") Long id,
-			@RequestParam(value = "firstName") String firstName, @RequestParam(value = "lastName") String lastName,
-			@RequestParam(value = "userName") String userName, @RequestParam(value = "password") String password,
-			@RequestParam(value = "userState") userState userState) {
-		Optional<User> currentUser = userRepository.findById(id);
-		User newUser = new User(currentUser.get().getId(), firstName, lastName, userName, password, userState,
-				currentUser.get().getRole().getUserRole());
-		userService.updateUser(newUser);
-		return new ResponseEntity<>(newUser, HttpStatus.OK);
-	}
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @DeleteMapping(path = "/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> deleteUserById(@PathVariable(value = "id") Long id) {
+        return userService.deleteById(id, restTemplate);
+    }
 
-	@CrossOrigin(origins = "*", allowedHeaders = "*")
-	@DeleteMapping(path = "/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> deleteUserById(@PathVariable(value = "id") Long id) {
-		return userService.deleteById(id, restTemplate);
-	}
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @GetMapping(path = "/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
 
-	@CrossOrigin(origins = "*", allowedHeaders = "*")
-	@GetMapping(path = "/getAll", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<User>> getAllUsers() {
-		List<User> users = userService.getAllUsers();
-		return new ResponseEntity<>(users, HttpStatus.OK);
-	}
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @GetMapping(path = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> login(@RequestParam(value = "userName") String userName, @RequestParam(value = "password") String password) {
+        return userService.loginUser(userName, password);
+    }
 
-	@CrossOrigin(origins = "*", allowedHeaders = "*")
-	@GetMapping(path = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<User> inLoggning(@RequestParam(value = "userName") String userName, @RequestParam(value = "password") String password) {
-		User user = userService.inLoggning(userName, password);
-		user.setLogged(true);
-		userRepository.save(user);
-		return new ResponseEntity<>(user, HttpStatus.OK);
-	}
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @GetMapping(path = "/logout/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<User> logout(@PathVariable(value = "id") Long id) {
+        Optional<User> user = userRepository.findById(id);
+        user.get().setLogged(false);
+        userRepository.save(user.get());
+        return new ResponseEntity<>(user.get(), HttpStatus.OK);
+    }
 
-	@CrossOrigin(origins = "*", allowedHeaders = "*")
-	@GetMapping(path = "/logout/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<User> Logout(@PathVariable(value = "id") Long id) {
-		Optional<User> user = userRepository.findById(id);
-		user.get().setLogged(false);
-		userRepository.save(user.get());
-		return new ResponseEntity<>(user.get(), HttpStatus.OK);
-	}
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @GetMapping(path = "/getAllUsersFor/{teamId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<User>> getTeamsUsers(@PathVariable(value = "teamId") long teamId) {
+        List<User> users = userRepository.findByTeamId(teamId);
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
 
-	@CrossOrigin(origins = "*", allowedHeaders = "*")
-	@GetMapping(path = "/getAllUsersFor/{teamId}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<User>> getTeamsUsers(@PathVariable(value = "teamId") long teamId) {
-		List<User> users = userRepository.findByTeamId(teamId);
-		return new ResponseEntity<>(users, HttpStatus.OK);
-	}
-
-	@CrossOrigin(origins = "*", allowedHeaders = "*")
-	@GetMapping(path = "/getTeamId/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Long> getTeamId(@PathVariable(value = "userId") long userId) {
-		Optional<User> user = userRepository.findById(userId);
-		return new ResponseEntity<>(user.get().getTeam().getId(), HttpStatus.OK);
-	}
+    @CrossOrigin(origins = "*", allowedHeaders = "*")
+    @GetMapping(path = "/getTeamId/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Long> getTeamId(@PathVariable(value = "userId") long userId) {
+        Optional<User> user = userRepository.findById(userId);
+        return new ResponseEntity<>(user.get().getTeam().getId(), HttpStatus.OK);
+    }
 }
