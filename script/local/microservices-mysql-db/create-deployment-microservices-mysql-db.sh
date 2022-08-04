@@ -1,3 +1,5 @@
+kubectl apply -f /Users/azizzakiryarov/IdeaProjects/microservices-users/k8s/base/microservices-mysql-db/secret.yaml
+
 kubectl apply -f /Users/azizzakiryarov/IdeaProjects/microservices-users/k8s/base/microservices-mysql-db/deployment.yaml
 
 kubectl apply -f /Users/azizzakiryarov/IdeaProjects/microservices-users/k8s/base/microservices-mysql-db/service.yaml
