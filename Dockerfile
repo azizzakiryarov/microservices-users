@@ -1,7 +1,5 @@
-FROM openjdk:11-jdk-slim
-
-ADD target/user-service-0.0.1-SNAPSHOT.jar user-service-0.0.1-SNAPSHOT.jar
-
-ENTRYPOINT ["java","-jar","/user-service-0.0.1-SNAPSHOT.jar"]
-
+FROM registry.access.redhat.com/ubi8/openjdk-11:latest
+COPY target/user-service-0.0.1-SNAPSHOT.jar /opt/user-service-0.0.1-SNAPSHOT.jar
 EXPOSE 8081
+WORKDIR /opt
+ENTRYPOINT ["java","-jar","/user-service-0.0.1-SNAPSHOT.jar"]
