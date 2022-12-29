@@ -43,8 +43,13 @@ public class UserService {
             States.userRole.USER
     );
 
-    public ResponseEntity<String> createUser(String firstName, String lastName, String userName, String password,
-                                             userRole userRole, String roleDescription, long teamId) {
+    public ResponseEntity<String> createUser(String firstName,
+                                             String lastName,
+                                             String userName,
+                                             String password,
+                                             userRole userRole,
+                                             String roleDescription,
+                                             long teamId) {
         User newUser;
         Role newRole = new Role();
         Team currentTeam = new Team();
