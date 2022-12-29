@@ -1,0 +1,1 @@
+kubectl delete deployment.apps/microservices-users-statefulset service/microservices-users

@@ -8,7 +8,7 @@ docker push azizzakiryarov/microservices-users:latest
 
 kubectl delete deployment.apps/mysql service/mysql-service
 
-kubectl delete statefulset.apps/microservices-users-statefulset service/microservices-users
+kubectl delete deployment.apps/microservices-users-deployment service/microservices-users
 
 kubectl apply -f /Users/azizzakiryarov/IdeaProjects/microservices-users/k8s/base/microservices-mysql-db/secret.yaml
 
@@ -20,6 +20,6 @@ kubectl apply -f /Users/azizzakiryarov/IdeaProjects/microservices-users/k8s/base
 
 kubectl apply -f /Users/azizzakiryarov/IdeaProjects/microservices-users/k8s/base/microservices-mysql-db/persistent-volume-claim.yaml
 
-kubectl apply -f /Users/azizzakiryarov/IdeaProjects/microservices-users/k8s/base/microservices-users/statefulset.yaml
+kubectl apply -f /Users/azizzakiryarov/IdeaProjects/microservices-users/k8s/base/microservices-users/deployment.yaml
 
 kubectl apply -f /Users/azizzakiryarov/IdeaProjects/microservices-users/k8s/base/microservices-users/service.yaml

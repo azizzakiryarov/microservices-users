@@ -1,1 +1,0 @@
-kubectl delete statefulset.apps/microservices-users-statefulset service/microservices-users

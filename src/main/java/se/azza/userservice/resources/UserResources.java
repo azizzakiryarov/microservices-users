@@ -36,6 +36,12 @@ public class UserResources {
         this.userService = userService;
     }
 
+    @CrossOrigin(origins = "*", allowedHeaders = "*")     
+    @GetMapping("/test")
+    public ResponseEntity<String> test(){
+        return new ResponseEntity<>("Test", HttpStatus.OK);
+    }
+
     @CrossOrigin(origins = "*", allowedHeaders = "*")
     @RequestMapping("/add")
     public ResponseEntity<String> addUser(@RequestParam(value = "firstName") String firstName,

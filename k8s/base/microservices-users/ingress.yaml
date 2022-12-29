@@ -1,0 +1,76 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: microservices-users
+  namespace: microservices
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: local.microservices.users.se
+      http:
+        paths:
+          - path: /users/add
+            pathType: Prefix
+            backend:
+              service:
+                name: microservices-users
+                port:
+                  number: 80
+          - path: /users/get(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: microservices-users
+                port:
+                  number: 80
+          - path: /users/update(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: microservices-users
+                port:
+                  number: 80
+          - path: /users/delete(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: microservices-users
+                port:
+                  number: 80
+          - path: /users/getAll
+            pathType: Prefix
+            backend:
+              service:
+                name: microservices-users
+                port:
+                  number: 80
+          - path: /users/login
+            pathType: Prefix
+            backend:
+              service:
+                name: microservices-users
+                port:
+                  number: 80
+          - path: /users/logout(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: microservices-users
+                port:
+                  number: 80
+          - path: /users/getAllUsersFor(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: microservices-users
+                port:
+                  number: 80
+          - path: /users/getTeamId(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: microservices-users
+                port:
+                  number: 80

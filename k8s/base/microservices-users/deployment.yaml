@@ -4,9 +4,9 @@ metadata:
   name: microservices
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
-  name: microservices-users-statefulset
+  name: microservices-users-deployment
   namespace: microservices
 spec:
   replicas: 1
@@ -14,7 +14,6 @@ spec:
     matchLabels:
       app: users
       tier: backend
-  serviceName: "microservices-users"
   template:
     metadata:
       labels:
@@ -24,7 +23,7 @@ spec:
       containers:
         - name: microservices-users
           image: azizzakiryarov/microservices-users:latest
-          imagePullPolicy: Never
+          imagePullPolicy: Always
           ports:
             - containerPort: 8081
               protocol: TCP
