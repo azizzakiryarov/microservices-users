@@ -1,28 +1,12 @@
-node {
-    def app
-
-    stage('Clone repository') {
-        checkout scm
-    }
-
-    stage('Build image') {  
-       app = docker.build("azizzakiryarov/microservices-users")
-    }
-
-    stage('Test image') {
-        app.inside {
-            sh 'echo "Tests passed"'
-        }
-    }
-
-    stage('Push image') {
-        docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
-            app.push("${env.BUILD_NUMBER}")
-        }
-    }
+node('jenkins-slave') {
     
-    stage('Trigger ManifestUpdate') {
-                echo "triggering updatemanifestjob"
-                build job: 'updatemanifest', parameters: [string(name: 'DOCKERTAG', value: env.BUILD_NUMBER)]
-        }
+     stage('test pipeline') {
+        sh(script: """
+            echo "hello"
+           git clone https://github.com/marcel-dempers/docker-development-youtube-series.git
+           cd ./docker-development-youtube-series/golang
+           
+           docker build . -t test
+        """)
+    }
 }
